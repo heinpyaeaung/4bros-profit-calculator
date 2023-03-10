@@ -6,3 +6,4 @@ My goal is to provide an efficient and user-friendly solution for calculating da
 2. tailwindcss
 3. expressjs
 4. cloudinaryjs
+5. firebase

@@ -9,12 +9,12 @@ const corsOptions = {
 }
 
 process.on('uncaughtException', (ex) => {
-    console.log('got an uncaught exception error');
+    console.log(ex.message);
     process.exit(1);
 });
 
 process.on('unhandledRejection', (ex) => {
-    console.log(ex);
+    console.log(ex.message);
     process.exit(1);
 });
 

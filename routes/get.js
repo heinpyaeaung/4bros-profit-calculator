@@ -6,7 +6,7 @@ router.get('/all_items/', async(req, res) => {
     try{
         let query_data = [];
         let limit = Number(req.query.limit);
-        let instockRefs = db.collection('instock').limit(limit).orderBy('name');       
+        let instockRefs = db.collection('instock').limit(limit).orderBy('name');  
         let Instocknapshot = await instockRefs.get();
         if(Instocknapshot.empty) return res.json({error: 'No Items'});
         Instocknapshot.docs.forEach(p => query_data.push({id: p.id, data: p.data()}))

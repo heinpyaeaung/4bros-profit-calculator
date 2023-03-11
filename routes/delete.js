@@ -19,57 +19,17 @@ router.delete('/delete/item/', async(req, res) => {
 })
 
 router.delete('/monthly_lists/', (req, res) => {
-  const collectionPath = 'monthly selling';
-  const batchSize = 3;
-  deleteCollection(collectionPath, batchSize)
-    .then(() => {
-      return res.json({message: `Collection ${collectionPath} deleted successfully.`});
+  const collectionRef = db.collection('monthly selling');
+  const batch = db.batch();
+  collectionRef.get()
+    .then(querySnapShot => {
+      querySnapShot.forEach(doc => {
+        batch.delete(doc.ref);
+      })
+      return batch.commit();
     })
-    .catch((err) => {
-      return res.json({error: `Error deleting collection ${collectionPath}: ${err}`});
-    });
+    .then(_ => res.json({message: 'All documents deleted successfully'}))
+    .catch(err => res.json({error: err.message}))
 })
   
-// Function to delete a collection
-async function deleteCollection(collectionPath, batchSize) {
-  const collectionRef = db.collection(collectionPath);
-  const query = collectionRef.limit(batchSize);
-  return new Promise((resolve, reject) => {
-    deleteQueryBatch(query, batchSize, resolve, reject);
-  });
-}
-
-// Helper function to recursively delete documents in batches
-function deleteQueryBatch(query, batchSize, resolve, reject) {
-  query.get()
-    .then((snapshot) => {
-      // When there are no documents left, we are done
-      if (snapshot.size === 0) {
-        resolve()
-        return;
-      }
-
-      // Delete documents in batch
-      const batch = db.batch();
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-
-      return batch.commit().then(() => {
-        return snapshot.size;
-      });
-    })
-    .then((numDeleted) => {
-      if (numDeleted === 0) {
-        resolve();
-        return;
-      }
-      // Recurse on the next batch
-      process.nextTick(() => {
-        deleteQueryBatch(query, batchSize, resolve, reject);
-      });
-    })
-    .catch(reject);
-}
-
 module.exports = router;

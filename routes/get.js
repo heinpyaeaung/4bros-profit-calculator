@@ -45,7 +45,7 @@ router.get('/search_items/', async(req, res) => {
         if(snapShot.empty){
             return res.json({error: 'no matching document'});
         }
-        snapShot.forEach(doc => query_item.push({data: doc.data()}));
+        snapShot.forEach(doc => query_item.push({id: doc.id, data: doc.data()}));
         return res.json({data: query_item});
     }catch(err){
         return res.json({

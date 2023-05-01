@@ -3,7 +3,6 @@ const router = express.Router()
 let db = require('../firebase/config')
 
 router.get('/all_items/', async(req, res) => {
-    try{
         let query_data = [];
         let limit = Number(req.query.limit);
         let instockRefs = db.collection('instock').limit(limit).orderBy('name');  
@@ -13,32 +12,20 @@ router.get('/all_items/', async(req, res) => {
         return res.json({
             data: query_data,
         })
-    }catch(err){
-        return res.json({
-            error: err.message
-        })
-    }
 })
 
 router.get('/monthly_lists/', async(req, res) => {
-    try{
-        let all_data = [];
-        const monthlyRefs = db.collection('monthly selling');
-        const monthlySnapshot = await monthlyRefs.get();
-        if(monthlySnapshot.empty) return res.json({error: 'No Lists'});
-        monthlySnapshot.forEach(doc => {
-            all_data.push({id: doc.id, data: doc.data()})
-        })
-        return res.json({data: all_data})
-    }catch(err){
-        return res.json({
-            error: err.message
-        })
-    }
+    let all_data = [];
+    const monthlyRefs = db.collection('monthly selling');
+    const monthlySnapshot = await monthlyRefs.get();
+    if(monthlySnapshot.empty) return res.json({error: 'No Lists'});
+    monthlySnapshot.forEach(doc => {
+        all_data.push({id: doc.id, data: doc.data()})
+    })
+    return res.json({data: all_data})
 })
 
-router.get('/search_items/', async(req, res) => {
-    try{
+router.get('/search_items/', async(req, res) => { 
         let query_item = [];
         let instockRefs = db.collection('instock');
         let snapShot = await instockRefs.where('name', '==', req.query.queryName).get();     
@@ -47,11 +34,6 @@ router.get('/search_items/', async(req, res) => {
         }
         snapShot.forEach(doc => query_item.push({id: doc.id, data: doc.data()}));
         return res.json({data: query_item});
-    }catch(err){
-        return res.json({
-            error: err.message
-        })
-    }
 })
 
 module.exports = router;

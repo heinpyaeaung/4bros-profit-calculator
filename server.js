@@ -1,6 +1,8 @@
 const express = require('express')
+require('express-async-errors')
 const app = express()
 const bodyParser = require('body-parser')
+const error = require('./middleware/error.js')
 require('dotenv').config()
 const cors = require('cors')
 const path = __dirname+'/views/';
@@ -31,6 +33,7 @@ app.use('/api/', getAllItems);
 app.use('/api/', deleteItem);
 app.use('/api/', updateItem);
 app.use(express.static(path));
+app.use(error);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
